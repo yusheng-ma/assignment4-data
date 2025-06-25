@@ -87,4 +87,8 @@ def gopher_quality_filter(text: str) -> bool:
     return True
 
 def classify_quality(text: str) -> tuple[Any, float]:
-    return "cc", 69.
+    model = fasttext.load_model("output/quality_classifier.bin")
+    cleaned_text = text.replace('\n', ' ').strip()
+    predictions, scores = model.predict(cleaned_text)
+    predicted_language = predictions[0].replace('__label__', '')
+    return predicted_language, scores[0]

@@ -167,3 +167,7 @@ cython_debug/
 #.idea/
 
 *.gz
+enwiki_urls.txt
+subsampled_positive_urls.txt
+temp_warc_files/
+output/
