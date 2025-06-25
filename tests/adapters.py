@@ -9,6 +9,7 @@ from cs336_data.utilities import classify_nsfw, classify_toxic_speech
 from cs336_data.utilities import gopher_quality_filter
 from cs336_data.utilities import classify_quality
 from cs336_data.utilities import exact_line_deduplication
+from cs336_data.minhash_deduplication import minhash_deduplication
 
 def run_extract_text_from_html_bytes(html_bytes: bytes) -> str | None:
     return extract_text_from_html_bytes(html_bytes)
@@ -60,4 +61,4 @@ def run_minhash_deduplication(
     jaccard_threshold: float,
     output_directory: os.PathLike,
 ):
-    raise NotImplementedError
+    return minhash_deduplication(input_files, num_hashes, num_bands, ngrams, jaccard_threshold, output_directory)

@@ -22,6 +22,8 @@ dependencies = [
     "pandas>=2.3.0",
     "warcio>=1.7.5",
     "scikit-learn>=1.7.0",
+    "datasketch>=1.6.5",
+    "unidecode>=1.4.0",
 ]
 
 [tool.setuptools.packages.find]
