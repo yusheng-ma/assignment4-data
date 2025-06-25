@@ -1,6 +1,10 @@
+import os
 import re
+import hashlib
 import fasttext
 from typing import Any
+from pathlib import Path
+from collections import defaultdict
 from resiliparse.parse.encoding import detect_encoding, bytes_to_str
 from resiliparse.extract.html2text import extract_plain_text
 
@@ -92,3 +96,25 @@ def classify_quality(text: str) -> tuple[Any, float]:
     predictions, scores = model.predict(cleaned_text)
     predicted_language = predictions[0].replace('__label__', '')
     return predicted_language, scores[0]
+
+def exact_line_deduplication(input_files: list[os.PathLike], output_directory: os.PathLike):
+    freq = defaultdict(int)
+    for input_file in input_files:
+        with open(input_file, 'r') as f:
+            for line in f.readlines():
+                sha256_hash = hashlib.sha256(line.encode("utf-8")).hexdigest()
+                freq[sha256_hash] += 1
+    
+    output_dir = Path(output_directory)
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    for input_file in input_files:
+        input_path = Path(input_file)
+        output_path = output_dir / input_path.name
+
+        with open(input_file, 'r') as fin, \
+            open(output_path, 'w') as fout:
+            for line in fin:
+                sha256_hash = hashlib.sha256(line.encode("utf-8")).hexdigest()
+                if freq[sha256_hash] == 1:
+                    fout.write(line)
