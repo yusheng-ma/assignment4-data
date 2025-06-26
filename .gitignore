@@ -171,3 +171,7 @@ enwiki_urls.txt
 subsampled_positive_urls.txt
 temp_warc_files/
 output/
+
+cs336-basics/outputs/
+cs336-basics/wandb/
+temp.txt
