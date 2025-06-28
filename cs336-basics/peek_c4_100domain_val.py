@@ -1,9 +1,15 @@
 import numpy as np
+
+# Load the tokenized data
 data = np.fromfile(
-    "data/paloma/tokenized_paloma_c4_100_domains_validation.bin",
+    "cs336-basics/data/paloma/tokenized_paloma_c4_100_domains_validation.bin",
     dtype=np.uint16
 )
 
+# Print number of tokens
+print("Number of tokens:", data.size)
+
+# Decode and print first 2000 tokens for inspection
 from transformers import AutoTokenizer
 tokenizer = AutoTokenizer.from_pretrained("gpt2")
-print(tokenizer.decode(data[0:2000]))
+print(tokenizer.decode(data[0:100]))

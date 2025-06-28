@@ -175,3 +175,5 @@ output/
 cs336-basics/outputs/
 cs336-basics/wandb/
 temp.txt
+
+processing_log.txt
