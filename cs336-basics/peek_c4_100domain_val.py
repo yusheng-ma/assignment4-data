@@ -2,7 +2,8 @@ import numpy as np
 
 # Load the tokenized data
 data = np.fromfile(
-    "cs336-basics/data/paloma/tokenized_paloma_c4_100_domains_validation.bin",
+    # "cs336-basics/data/paloma/tokenized_paloma_c4_100_domains_validation.bin",
+    "cs336-basics/tokenized_output/splits/merged_gpt2_data_train.bin",
     dtype=np.uint16
 )
 

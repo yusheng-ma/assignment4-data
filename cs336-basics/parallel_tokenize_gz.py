@@ -8,9 +8,8 @@ from transformers import GPT2TokenizerFast
 
 # Configuration
 input_dir = "cs336-basics/final_output"     # Folder containing .final.gz files
-output_dir = "cs336-basics/tokenized_output"  # Output directory for .bin files
+output_dir = "cs336-basics/tokenized_output/splits"  # Output directory for .bin files
 output_prefix = "gpt2_data"
-val_ratio = 0.1  # 10% for validation
 chunksize = 100
 
 # Create output directory
@@ -50,33 +49,32 @@ if __name__ == "__main__":
         raise FileNotFoundError(f"No .final.gz files found in {input_dir}")
 
     print(f"🧠 Loading and tokenizing {len(input_files)} files...")
-    all_ids = []
 
-    # Show progress bar over files only
-    for file in tqdm(input_files, desc="Files processed", total=len(input_files)):
-        try:
-            ids = process_file(file)
-            all_ids.extend(ids)
-        except Exception as e:
-            print(f"\n⚠️ Error processing file {file}: {e}")
-            continue
+    split_size = 50
 
-    print(f"🔢 Total tokens: {len(all_ids):,}")
+    for i, start_idx in enumerate(range(0, len(input_files), split_size)):
+        group = input_files[start_idx : start_idx + split_size]
+        print(f"ParallelGroup {i} → Files: {len(group)}")
 
-    # Convert to NumPy array
-    ids_array = np.array(all_ids, dtype=np.uint16)  # GPT-2 vocab size is ~50k → fits in uint16
+        all_ids = []
 
-    # Split into train and validation
-    val_size = int(len(ids_array) * val_ratio)
-    train_ids = ids_array[val_size:]
-    val_ids = ids_array[:val_size]
+        # Show progress bar over files only
+        for file in tqdm(group, desc="Files processed", total=len(group)):
+            try:
+                ids = process_file(file)
+                all_ids.extend(ids)
+            except Exception as e:
+                print(f"\n⚠️ Error processing file {file}: {e}")
+                continue
 
-    # Save to disk
-    train_output = Path(output_dir) / f"{output_prefix}_train.bin"
-    val_output = Path(output_dir) / f"{output_prefix}_val.bin"
+        print(f"🔢 Total tokens: {len(all_ids):,}")
 
-    train_ids.tofile(train_output)
-    val_ids.tofile(val_output)
+        # Convert to NumPy array
+        ids_array = np.array(all_ids, dtype=np.uint16)  # GPT-2 vocab size is ~50k → fits in uint16
 
-    print(f"\n💾 Saved {len(train_ids):,} training tokens to {train_output}")
-    print(f"💾 Saved {len(val_ids):,} validation tokens to {val_output}")
+        # Save to disk
+        train_output = Path(output_dir) / f"{output_prefix}_train_{i}.bin"
+
+        ids_array.tofile(train_output)
+
+        print(f"\n💾 Saved {len(ids_array):,} training tokens to {train_output}")
